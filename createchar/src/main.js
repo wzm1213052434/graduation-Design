@@ -2,11 +2,15 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import axios from 'axios';
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+
+Vue.use(ElementUI);
 Vue.config.productionTip = false
 
 
 const Axios = axios.create({
-    baseURL: "199.166.1.1:8080/api",
+    baseURL: "http://127.0.0.1:3000/",
     timeout: 8000,
     headers: {
         "accept": "application/json",

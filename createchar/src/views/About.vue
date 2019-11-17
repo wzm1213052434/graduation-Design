@@ -1,6 +1,6 @@
 <template>
   <div>
-    <router-link to="/" tag="button" class="addButton">查看列表</router-link>
+	<el-button size="mini" type="primary" class="addButton" @click="routerClick">查看列表</el-button>
     <div id="editor">
       <mavon-editor style="height: 100%" :toolbars="markdownOption" :ishljs="true" @save="save"></mavon-editor>
     </div>
@@ -17,11 +17,21 @@ export default {
   methods: {
     save(value, render) {
       if (value) {
-        alert("保存成功", render);
+        this.$http
+          .post("/postInformation", {
+            markDownChars: value,
+            htmlRender: render
+          })
+          .then(function() {
+            alert("保存成功");
+          });
       } else {
         alert("没有输入");
       }
-    }
+    },
+	routerClick() {
+		this.$router.push('/');
+	}
   },
   data() {
     return {

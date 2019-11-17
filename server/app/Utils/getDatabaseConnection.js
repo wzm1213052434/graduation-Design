@@ -7,7 +7,7 @@ const pool = mysql.createPool({
     port: 3306,                 // 端口
     user: "root",               // 数据库访问账号
     password: "edengyumc2",         // 数据库访问密码
-    database: "lhy",           // 要访问的数据库
+    database: "graduationdesign",           // 要访问的数据库
     charset: "UTF8_GENERAL_CI", // 字符编码 ( 必须大写 )
     typeCast: true,             // 是否把结果值转换为原生的 javascript 类型
     supportBigNumbers: true,    // 处理大数字 (bigint, decimal), 需要开启 ( 结合 bigNumberStrings 使用 )
