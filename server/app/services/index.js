@@ -19,7 +19,6 @@ const getAll = () => {
             res[i].renderHtml = res[i].renderHtml.toString("utf-8");
             arr.push(res[i]);
         }
-        console.log(arr);
         return arr;
     })
 }

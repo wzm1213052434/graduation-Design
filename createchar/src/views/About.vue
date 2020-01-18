@@ -1,10 +1,7 @@
 <template>
-  <div>
-	<el-button size="mini" type="primary" class="addButton" @click="routerClick">查看列表</el-button>
     <div id="editor">
-      <mavon-editor style="height: 100%" :toolbars="markdownOption" :ishljs="true" @save="save"></mavon-editor>
+      <mavon-editor style="height: 100%;width:95%;margin:0 auto;" :toolbars="markdownOption" :ishljs="true" @save="save"></mavon-editor>
     </div>
-  </div>
 </template>
     <script>
 import { mavonEditor } from "mavon-editor";
@@ -16,22 +13,22 @@ export default {
   },
   methods: {
     save(value, render) {
+      let _this = this;
       if (value) {
         this.$http
           .post("/postInformation", {
             markDownChars: value,
             htmlRender: render
           })
-          .then(function() {
-            alert("保存成功");
+          .then(function(data) {
+            console.log(data);
+            _this.$message.success('保存成功');
+            //alert('保存成功！');
           });
       } else {
-        alert("没有输入");
+        this.$message.error("没有输入");
       }
-    },
-	routerClick() {
-		this.$router.push('/');
-	}
+    }
   },
   data() {
     return {
@@ -63,8 +60,7 @@ export default {
 </script>
 <style scoped>
 #editor {
-  margin: 0 auto;
-  width: 80%;
-  height: 580px;
+  margin: 1% auto;
+  height: 95%;
 }
 </style>

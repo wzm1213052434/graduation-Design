@@ -1,19 +1,15 @@
 <template>
   <div>
     <div class="title">特殊字符列表</div>
-    <div class="addButton">
-		<el-button size="mini" type="primary" @click="routerClick">添加符号</el-button>
-    </div>
     <div class="table-area">
       <el-table 
 		:data="data" 
 		stripe 
 		border 
-		style="width: 100%;height:100%;" 
 		v-loading.body="isLoading" 
 		element-loading-text="拼命加载中"
 	>
-        <el-table-column prop="id" label="序号"></el-table-column>
+        <el-table-column prop="id" label="序号" ></el-table-column>
         <el-table-column prop="markdown" label="markdown"></el-table-column>
         <el-table-column prop="renderHtml" label="符号显示">
           <template slot-scope="scope">
@@ -52,10 +48,10 @@ export default {
   methods: {
     copy(row) {
       var input = document.getElementById("tempValueInput");
-      input.value = row.htmlRender;
+      input.value = row.renderHtml;
       input.select();
       document.execCommand("copy"); // 执行浏览器复制命令
-      alert("复制成功");
+      this.$message.success("复制成功");
     },
 	handleEdit(row) {
 		let getAll = this.getAll;
@@ -77,9 +73,6 @@ export default {
 			}
 			_this.isLoading = false;
 		});
-	},
-	routerClick() {
-		this.$router.push('/about');
 	}
   }
 };
@@ -97,7 +90,7 @@ export default {
 }
 
 .table-area {
-  width: 50%;
+  width: 70%;
   height: 80%;
   margin: 1% auto;
   text-align: center;
