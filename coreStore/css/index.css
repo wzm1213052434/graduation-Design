@@ -1,0 +1,52 @@
+/*
+    基础选择按钮。
+*/
+.bas-alt-but {
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+.bas-alt-but:hover {
+    background: rgba(233,233,233,0.5);
+}
+/*
+    模态框。
+*/
+.mark-board {
+    width:100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, .9);
+}
+.modal-board {
+    width: 60%;
+    height: 60%;
+    background: white;
+    border: 1px solid rgb(200, 200, 200);
+    border-radius: 5px;
+    margin: 10% auto;
+}
+.modal-header {
+    text-align: center;
+}
+.modal-content > table{
+    width: 100%;
+    border-collapse:collapse;
+    text-align: center;
+}
+.modal-content > table th,
+.modal-content > table tr{
+    border-top: 1px solid rgb(200, 200, 200);
+}
+
+.modal-content > table th,
+.modal-content > table td {
+    border-right: 1px solid rgb(200, 200, 200);
+}
+
+.modal-content > table th:last-child,
+.modal-content > table td:last-child {
+    border-right: none;
+}
