@@ -10,7 +10,7 @@
     background: rgba(233,233,233,0.5);
 }
 /*
-    模态框。
+    模态框。(包含表格的样式)
 */
 .mark-board {
     width:100%;
@@ -18,7 +18,8 @@
     position: fixed;
     top: 0;
     left: 0;
-    background: rgba(0, 0, 0, .9);
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
 }
 .modal-board {
     width: 60%;
@@ -29,7 +30,13 @@
     margin: 10% auto;
 }
 .modal-header {
+    width: 100%;
+    height: 10%;
     text-align: center;
+}
+.modal-content {
+    width: 100%;
+    height: 80%;
 }
 .modal-content > table{
     width: 100%;
@@ -49,4 +56,11 @@
 .modal-content > table th:last-child,
 .modal-content > table td:last-child {
     border-right: none;
+}
+
+.modal-footer-content {
+    width: 100%;
+    height: 10%;
+    text-align: center;
+    line-height: 100%;
 }
