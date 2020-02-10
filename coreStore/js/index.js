@@ -1,24 +1,34 @@
 /**
  * 模态框div
  */
-let modal = 
-    `
-        <div class="mark-board">
+let modal = (id,title,save) => {
+    return `
+        <div class="mark-board" id=${id}>
             <div class="modal-board">
                 <div class="modal-header">
-                    特殊符号列表
+                    ${title}
                 </div>
                 <div class="modal-content">    
                 </div>
-                <div class="modal-footer">
-                    <div class="modal-footer-content">
-                        <button id="">取消</button>
-                        <button >保存</button>
+                <div class="modal-footer" >
+                    <div class="modal-footer-content">  
+                    ${
+                        (save) ? `
+                            <button onclick="basButCancelBut('${id}')">取消</button>
+                            <button >保存</button>
+                        ` : `
+                            <button onclick="basButCancelBut('${id}')">取消</button>
+                        `
+                    }
                     </div>
                 </div>
             </div>
         </div>
-    `;
+        `;
+}
+/**
+ * 符号数据表格div
+ */
 let dataTable = 
     `
         <table>
@@ -33,7 +43,7 @@ let dataTable =
         </table>
     `;
 /*
-    请求发送函数
+    表格数据请求发送函数
 */
 var getDatas = function() {
     return new Promise((resolve,reject) => {
@@ -45,7 +55,7 @@ var getDatas = function() {
                 resolve(data);
             },
             error: function(err) {
-                console.log("error" + err);
+                console.log(err);
                 reject(data);
             }
         })
@@ -62,48 +72,70 @@ var clipStr = function(str) {
     let nail = str.substr(-20);
     return prev + "....." + nail;
 }
+/**
+ *  初始化modal函数
+ */
+var modalInit = function(title) {
+    return (function() {
+        let count = "modal" + Math.floor(Math.random() * 10);
+        if($("#" + count).length === 0) {
+            $("body").append(modal(count,title));
+            return count;
+        }else {
+            return modalInit();
+        }
+    })()
+}
+/**
+ * 弹出框按钮监听函数
+ */
+//basButSwiftInit 选择按钮和取消按钮
+let basButSelectBut = function(select) {
+
+}
+let basButCancelBut = function(id) {
+    $("#" + id).fadeToggle();
+}
+
 /*
     总引用函数
 */
 const specCharUIMod = {
     basButSwiftInit: function(id) {
-        let basButton = $(`#${id}`);
-        
+        $(`#${id}`).click(() => {
+            let modalId = modalInit("特殊符号列表");
+            $("#" + modalId +" .modal-content").append(dataTable);
+            $("#" + modalId).fadeToggle(1000);
+            let tbody = $(`#${modalId} .modal-content > table > tbody`);
+            tbody.html("载入中");
+            let data = getDatas().then((datas) => {
+                tbody.html("");
+                for(let i in datas) {
+                    let tr = 
+                    `
+                        <tr>
+                            <td>${i}</td>
+                            <td>${clipStr(datas[i].markdown)}</td>
+                            <td>${datas[i].renderHtml}</td>
+                            <td>${(datas[i].remark) ? datas[i].remark : ""}</td>
+                            <td>
+                                <button >选择</button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.append(tr);
+                }
+            })
+        });
     },
-    textAreaInit: function() {
-        $("body").append(modal);    
-        let tbody = $(".modal-content > table > tbody");
-        tbody.html("载入中");
-        let data = getDatas().then((datas) => {
-            tbody.html("");
-            for(let i in datas) {
-                let tr = 
-                `
-                    <tr>
-                        <td>${i}</td>
-                        <td>${clipStr(datas[i].markdown)}</td>
-                        <td>${datas[i].renderHtml}</td>
-                        <td>${(datas[i].remark) ? datas[i].remark : ""}</td>
-                        <td>
-                            <button>选择</button>
-                        </td>
-                    </tr>
-                `;
-                tbody.append(tr);
-            }
+    textAreaInit: function(id) {
+        $(`#${id}`).click(() => {
+            
         })
+    },
+    printPage: function(id) {
+       $(`#${id}`).click(() => {
+            //打印的相关操作
+       })
     }
 }
-/**
- * 将自定义函数挂在到jquery.
- */
-for(let i in specCharUIMod) {
-    jQuery.fn.init.prototype[i] = specCharUIMod[i];
-}
-
-//主运行函数
-function main() {
-    $("body").textAreaInit();
-}
-
-main();
