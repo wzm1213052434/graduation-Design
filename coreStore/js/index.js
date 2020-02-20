@@ -42,6 +42,23 @@ let dataTable =
             <tbody></tbody>
         </table>
     `;
+/**
+ * 可编辑textArea html
+ */
+let textAreaHtml = (id) => {
+    return `
+        <div class="bas-textArea-modal" style="width:100%;height:100%;">
+            <textarea id="${id + "textArea"}"></textarea>
+        </div>
+    `;
+} 
+
+let popoverBoard = () => {
+    return `
+        <div class="popover-board">
+        </div>
+    `;
+}
 /*
     表格数据请求发送函数
 */
@@ -75,14 +92,14 @@ var clipStr = function(str) {
 /**
  *  初始化modal函数
  */
-var modalInit = function(title) {
+var modalInit = function(title,save) {
     return (function() {
         let count = "modal" + Math.floor(Math.random() * 10);
         if($("#" + count).length === 0) {
-            $("body").append(modal(count,title));
+            $("body").append(modal(count,title,save));
             return count;
         }else {
-            return modalInit();
+            return modalInit(title,save);
         }
     })()
 }
@@ -90,13 +107,48 @@ var modalInit = function(title) {
  * 弹出框按钮监听函数
  */
 //basButSwiftInit 选择按钮和取消按钮
-let basButSelectBut = function(select) {
-
+let basButSelectBut = function(select,id,modalId) {
+    getDatas().then((datas) => {
+        $("#" + id).html(datas[select].renderHtml);
+        $("#" + modalId).fadeToggle();
+    })
 }
 let basButCancelBut = function(id) {
     $("#" + id).fadeToggle();
 }
-
+//textAreaInit 添加符号按钮
+let textAreaOnAddBut = function(id) {
+    
+}
+/**
+ * 表格插入函数
+ */
+let addTData2Modal = function(modalId,butId,popover) {
+    let tbody = (popover) ? $("#" + modalId + " .modal-header > .popover-board table > tbody") : $(`#${modalId} .modal-content > table > tbody`);
+    tbody.html("载入中");
+    let data = getDatas().then((datas) => {
+        tbody.html("");
+        for(let i in datas) {
+            let tr = 
+            `
+                <tr>
+                    <td>${(i - 0 + 1)}</td>
+                    <td>${clipStr(datas[i].markdown)}</td>
+                    <td>${datas[i].renderHtml}</td>
+                    <td>${(datas[i].remark) ? datas[i].remark : ""}</td>
+                    <td>
+                        ${
+                            (popover) ? 
+                            `<button onclick="">选择</button>` :
+                            `<button onclick="basButSelectBut('${i}','${butId}','${modalId}')">选择</button>`
+                        }
+                    </td>
+                </tr>
+            `;
+            tbody.append(tr);
+        }
+    })
+}
 /*
     总引用函数
 */
@@ -105,37 +157,42 @@ const specCharUIMod = {
         $(`#${id}`).click(() => {
             let modalId = modalInit("特殊符号列表");
             $("#" + modalId +" .modal-content").append(dataTable);
-            $("#" + modalId).fadeToggle(1000);
-            let tbody = $(`#${modalId} .modal-content > table > tbody`);
-            tbody.html("载入中");
-            let data = getDatas().then((datas) => {
-                tbody.html("");
-                for(let i in datas) {
-                    let tr = 
-                    `
-                        <tr>
-                            <td>${i}</td>
-                            <td>${clipStr(datas[i].markdown)}</td>
-                            <td>${datas[i].renderHtml}</td>
-                            <td>${(datas[i].remark) ? datas[i].remark : ""}</td>
-                            <td>
-                                <button >选择</button>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.append(tr);
-                }
-            })
+            $("#" + modalId).fadeToggle(500);
+            addTData2Modal(modalId,id);
         });
     },
     textAreaInit: function(id) {
         $(`#${id}`).click(() => {
-            
+            let title = `
+                <div style="display:flex;">
+                    <div style="width:50%;text-align:right;margin-right:-5%;">编辑</div>
+                    <div style="width:50%;text-align:right;padding-right:5%;">
+                        <button id="${id + "textAreaOnAdd"}">添加符号</button>
+                    </div>
+                </div>
+            `;
+            let modalId = modalInit(title,true);
+            $("#" + modalId + " .modal-content").append(textAreaHtml);
+            $("#" + modalId).fadeToggle(500);
+            $("#" + modalId + " .modal-header").append(popoverBoard);
+            let addButton = $(`#${id + "textAreaOnAdd"}`);
+            let popoverModal = $("#" + modalId + " .modal-header > .popover-board");
+            let x = addButton.position().left - (popoverModal.width() / 2) + (addButton.width() / 1.5);
+            let y = addButton.position().top + (addButton.height() * 2);
+            popoverModal.css({top: y,left: x});
+            popoverModal.append(dataTable);
+            addTData2Modal(modalId,'id',true)
+            $(`#${id + "textAreaOnAdd"}`).click(function() {
+                popoverModal.fadeToggle();
+            })
+            $("#" + modalId + " .modal-content").click(function() {
+                $("#" + modalId + " .modal-header > .popover-board").fadeOut();
+            })
         })
     },
     printPage: function(id) {
-       $(`#${id}`).click(() => {
-            //打印的相关操作
-       })
+        $(`#${id}`).click(() => {
+                //打印的相关操作
+        })
     }
 }

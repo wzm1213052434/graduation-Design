@@ -1,3 +1,6 @@
+body{
+    position: relative;
+}
 /*
     基础选择按钮。
 */
@@ -8,6 +11,25 @@
 }
 .bas-alt-but:hover {
     background: rgba(233,233,233,0.5);
+}
+/*
+    可点击div
+*/
+.bas-textArea {
+    border: 1px solid rgba(233,233,233,1);
+    cursor: pointer;
+}
+.bas-textArea:hover {
+    background: rgba(233,233,233,0.5);
+}
+.bas-textArea-modal textarea {
+    display: block;
+    margin: 0 auto;
+    width: 95%;
+    height: 95%;
+    border: 1px solid rgba(233,233,233,1);
+    outline: none;
+    resize: none;
 }
 /*
     模态框。(包含表格的样式)
@@ -39,24 +61,24 @@
     width: 100%;
     height: 80%;
 }
-.modal-content > table{
+.modal-content table{
     width: 100%;
     height: 100%;
     border-collapse:collapse;
     text-align: center;
 }
-.modal-content > table th,
-.modal-content > table tr{
+.modal-content table th,
+.modal-content table tr{
     border-top: 1px solid rgb(200, 200, 200);
 }
 
-.modal-content > table th,
-.modal-content > table td {
+.modal-content table th,
+.modal-content table td {
     border-right: 1px solid rgb(200, 200, 200);
 }
 
-.modal-content > table th:last-child,
-.modal-content > table td:last-child {
+.modal-content table th:last-child,
+.modal-content table td:last-child {
     border-right: none;
 }
 
@@ -66,3 +88,62 @@
     text-align: center;
     line-height: 100%;
 }
+/*
+    气泡弹出框
+*/
+.popover-board {
+    width: 500px;
+    height: 250px;
+    position: absolute;
+	background: #88b7d5;
+    border: 2px solid #c2e1f5;
+    border-radius: 5px;
+    display: none;
+}
+.popover-board:after, .popover-board:before {
+	bottom: 100%;
+	left: 50%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.popover-board:after {
+	border-color: rgba(136, 183, 213, 0);
+	border-bottom-color: #88b7d5;
+	border-width: 10px;
+	margin-left: -10px;
+}
+.popover-board:before {
+	border-color: rgba(194, 225, 245, 0);
+	border-bottom-color: #c2e1f5;
+	border-width: 13px;
+	margin-left: -13px;
+}
+.popover-board table{
+    width: 100%;
+    height: 98%;
+}
+/*.popover-board {
+    width: 450px;
+    height: 200px;
+    position: absolute;
+}
+.popover-board > .popover-angle {
+    width: 0; 
+    height: 0;
+    border-width: 10px;
+    border-style: solid;
+    border-color:transparent transparent rgba(255,255,255,.8) transparent;
+    margin: 0 auto;
+}
+.popover-board > .popover-content {
+    width: 100%;
+    height: 189px;
+    background: rgba(255,255,255,.8);
+    border: 1px solid rgba(0,0,0,.3);
+    border-radius: 3px;
+}*/
