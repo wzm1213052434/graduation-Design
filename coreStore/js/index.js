@@ -15,7 +15,7 @@ let modal = (id,title,save) => {
                     ${
                         (save) ? `
                             <button onclick="basButCancelBut('${id}')">取消</button>
-                            <button >保存</button>
+                            <button id="${id}TextAreaSaveBut">保存</button>
                         ` : `
                             <button onclick="basButCancelBut('${id}')">取消</button>
                         `
@@ -59,6 +59,11 @@ let popoverBoard = () => {
         </div>
     `;
 }
+
+/**
+ *  textArea原值与生成值辐射对象
+ */
+let textAreaPre2Pro = {};
 /*
     表格数据请求发送函数
 */
@@ -117,8 +122,30 @@ let basButCancelBut = function(id) {
     $("#" + id).fadeToggle();
 }
 //textAreaInit 添加符号按钮
-let textAreaOnAddBut = function(id) {
-    
+let textAreaOnAddBut = function(modalId,i) {
+    let pre = $("#" + modalId + "textArea").val();
+    pre += "...";
+    $("#" + modalId + "textArea").val(pre);
+    textAreaPre2Pro["#" + modalId + "textArea"]["pro"].push(i);
+}
+//textArea监听函数
+let textAreaListener = function(id) {
+    $(id).change(function() {
+        textAreaPre2Pro[id]["pre"] = $(this).val();
+    })
+}
+//textArea结果保存函数
+let textAreaSaveBut = function(id,modalId) {
+    let preStr = $("#" + modalId + "textArea").val();
+    let proArr = textAreaPre2Pro["#" + modalId + "textArea"]["pro"];
+    getDatas().then((datas) => {
+        let i = 0;
+        while(preStr.indexOf("...") > -1) {
+            preStr = preStr.replace("...",datas[proArr[i]].renderHtml);
+            i++;
+        }
+        $("#" + id).html(preStr);
+    })
 }
 /**
  * 表格插入函数
@@ -126,7 +153,7 @@ let textAreaOnAddBut = function(id) {
 let addTData2Modal = function(modalId,butId,popover) {
     let tbody = (popover) ? $("#" + modalId + " .modal-header > .popover-board table > tbody") : $(`#${modalId} .modal-content > table > tbody`);
     tbody.html("载入中");
-    let data = getDatas().then((datas) => {
+    getDatas().then((datas) => {
         tbody.html("");
         for(let i in datas) {
             let tr = 
@@ -139,7 +166,7 @@ let addTData2Modal = function(modalId,butId,popover) {
                     <td>
                         ${
                             (popover) ? 
-                            `<button onclick="">选择</button>` :
+                            `<button onclick="textAreaOnAddBut('${modalId}','${i}')">添加</button>` :
                             `<button onclick="basButSelectBut('${i}','${butId}','${modalId}')">选择</button>`
                         }
                     </td>
@@ -172,8 +199,10 @@ const specCharUIMod = {
                 </div>
             `;
             let modalId = modalInit(title,true);
-            $("#" + modalId + " .modal-content").append(textAreaHtml);
+            $("#" + modalId + " .modal-content").append(textAreaHtml(modalId));
             $("#" + modalId).fadeToggle(500);
+            textAreaPre2Pro["#" + modalId + "textArea"] = { pro: []};
+            textAreaListener("#" + modalId + "textArea");
             $("#" + modalId + " .modal-header").append(popoverBoard);
             let addButton = $(`#${id + "textAreaOnAdd"}`);
             let popoverModal = $("#" + modalId + " .modal-header > .popover-board");
@@ -181,9 +210,12 @@ const specCharUIMod = {
             let y = addButton.position().top + (addButton.height() * 2);
             popoverModal.css({top: y,left: x});
             popoverModal.append(dataTable);
-            addTData2Modal(modalId,'id',true)
+            addTData2Modal(modalId,'id',true);
+            $("#" + modalId + "TextAreaSaveBut").click(function() {
+                textAreaSaveBut(id,modalId);
+            })
             $(`#${id + "textAreaOnAdd"}`).click(function() {
-                popoverModal.fadeToggle();
+                popoverModal.fadeIn();
             })
             $("#" + modalId + " .modal-content").click(function() {
                 $("#" + modalId + " .modal-header > .popover-board").fadeOut();
@@ -193,6 +225,32 @@ const specCharUIMod = {
     printPage: function(id) {
         $(`#${id}`).click(() => {
                 //打印的相关操作
+                var orderId = "test";
+                console.log(orderId);
+                $.ajax({
+                    type: "get",
+                    url:"http://localhost:3000/getDocument",
+                    responseType:'blob',
+                    data: {},
+                    success: function(res) {
+                        //这里res.data是返回的blob对象
+                        var blob = new Blob([res.data], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'}); //application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
+                        var downloadElement = document.createElement('a');
+                        var href = window.URL.createObjectURL(blob); //创建下载的链接
+                        downloadElement.href = href;
+                        downloadElement.download = orderId+'.docx'; //下载后文件名
+                        document.body.appendChild(downloadElement);
+                        downloadElement.click(); //点击下载
+                        document.body.removeChild(downloadElement); //下载完成移除元素
+                        window.URL.revokeObjectURL(href); //释放掉blob对象
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    }
+                })
         })
+    },
+    printDatas: function() {
+        return getDatas();
     }
 }

@@ -13,7 +13,7 @@
             </div>
         </div>
         <div class="login-submit">
-            <button>登 录</button>
+            <button @click="handleLogin">登 录</button>
         </div>
       </div>
   </div>
@@ -21,7 +21,12 @@
 
 <script>
 export default {
-    name: 'login'
+    name: 'login',
+    methods:{
+        handleLogin() {
+            this.$router.push({path: '/homePage'}).catch(() => {});
+        }
+    }
 }
 </script>
 
