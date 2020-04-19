@@ -1,4 +1,3 @@
-create database demoSystem;
 use demoSystem;
 SET FOREIGN_KEY_CHECKS=0;
 
@@ -7,7 +6,7 @@ SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
 DROP TABLE IF EXISTS `strange_chars`;
 CREATE TABLE `strange_chars` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `markdown` varchar(255) default NULL,
   `name` varchar(40) default '',
   `renderHtml` blob default NULL,
