@@ -2,13 +2,20 @@
   <div>
     <div class="table-area">
       <el-table 
-		:data="data" 
-		stripe 
-		border 
-		v-loading.body="isLoading" 
-		element-loading-text="拼命加载中"
-	>
-        <el-table-column prop="id" label="序号" ></el-table-column>
+        :data="data" 
+        stripe 
+        border 
+        v-loading.body="isLoading" 
+        element-loading-text="拼命加载中"
+      >
+        <el-table-column
+          label="序号"
+          width="80"
+        >
+          <template slot-scope="scope">
+            <div v-html="scope.$index - 0 + 1"></div>
+          </template>
+        </el-table-column>
         <el-table-column prop="markdown" label="markdown"></el-table-column>
         <el-table-column prop="renderHtml" label="符号显示">
           <template slot-scope="scope">
@@ -57,8 +64,8 @@ export default {
 		this.$http.post("/deleteOneChar", {
 				id: row.deleteId
 			}).then(function() {
-			getAll();
-		}
+			  getAll();
+		  }
     )
 	},
 	getAll() {

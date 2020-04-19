@@ -1,11 +1,12 @@
 let mysqlOperation = require('./mysqlOperation');
 
-const addChar = async (markdown, render) => {
+const addChar = (markdown, render) => {
     let sql = 'INSERT INTO strange_chars(markdown,renderHtml) VALUES(?,?)';
+    let date = new Date();
     let arr = [markdown, render];
-    setTimeout(function () {
-        return mysqlOperation(sql, arr)
-    }, 1000);
+    return new Promise((reslove,reject) => {
+        reslove(mysqlOperation(sql, arr));
+    })
 }
 
 const deleteChar = (id) => {

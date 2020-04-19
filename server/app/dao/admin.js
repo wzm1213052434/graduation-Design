@@ -24,10 +24,18 @@ const deleteOneAccount = (id) => {
 }
 
 const addOneAccount = (mes) => {
-    let sql = `INSERT INTO person(permission,password,name,delete_status) VALUES(${mes.permission},${mes.password},${mes.name},${mes.delete_status})`
+    let sql = "INSERT INTO person(id,permission,password,name,delete_status) VALUES(?,?,?,?,1)"
+    let arr = [mes.id,mes.permission,mes.password,mes.name]
     return new Promise((reslove, reject) => {
-        reslove(mysqlOperation(sql));
+        reslove(mysqlOperation(sql,arr));
     })
 }
 
-module.exports = { getAllAccount, getOneAccount , deleteOneAccount , addOneAccount }
+const changeAccount = (mes) => {
+    let sql = "UPDATE person SET permission=?,name=? WHERE id=?";
+    let arr = [mes.permission,mes.name,mes.id];
+    return new Promise((reslove, reject) => {
+        reslove(mysqlOperation(sql,arr));
+    })
+}
+module.exports = { getAllAccount , getOneAccount , deleteOneAccount , addOneAccount , changeAccount }

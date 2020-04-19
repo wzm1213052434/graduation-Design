@@ -1,65 +1,96 @@
-var officegen = require('officegen');
 var fs = require('fs');
-var path = require('path');
-var docx = officegen ( 'docx' );
-var async = require('async');
-
-const exportWord = function(req, res) {
-        console.log('exportWord-------------');
-        docx.on ( 'finalize', function ( written ) {
-                    console.log ( 'Finish to create Word file.\nTotal bytes created: ' + written + '\n' );
-                });
-    
-        docx.on ( 'error', function ( err ) {
-                    console.log ( err );
-                });
-    
-        var pObj = docx.createP ( { align: 'center' } );// 创建行 设置居中
-        pObj.addText ( '血液透析（滤过）治疗知情同意书', { bold: true,font_face: 'Arial', font_size: 18 });// 添加文字 设置字体样式 加粗 大小
-    
-        var pObj = docx.createP ();
-        pObj.addText ( '姓名' );
-        pObj.addText ( ' with color', { color: '000088' } );// 设置字体颜色
-        pObj.addText ( '性别' );
-        pObj.addText ( '', { color: '00ffff', back: '000088' } );
-        pObj.addText ( '年龄' );
-        pObj.addText ( '岁', { color: '000088' } );
-    
-    
-        var pObj = docx.createP ();
-        pObj.addText ( '门诊（住院）号' );
-        pObj.addText ( ' with color', { color: '000088' } );
-        pObj.addText ( '诊断' );
-        pObj.addText ( '', { color: '000088'} );
-    
-    
-        var pObj = docx.createP ();
-        pObj.addText ( '一、血液透析（滤过）能有效清除身体内过多的水分合霉素，是治疗急性和慢性肾衰竭等疾病的有效方法。' );
-        var pObj = docx.createP ();
-        pObj.addText ( '二、血液透析（滤过）治疗时，首先需要将患者血液引到体外，然后通过透析或滤过等方法清除水分和霉素，经受理后的血液再回到患者体外。' );
-        var pObj = docx.createP ();
-        pObj.addText ( '三、为了有效引出血液，治疗前需要建立血管通路（动静脉内痿或深静脉插管）。' );
-        var pObj = docx.createP ();
-        pObj.addText ( '四、为防止血液在体外管路和透析器发生凝固，一般需要在透析前和透析过程中注射肝素等抗凝药物。' );
-        var pObj = docx.createP ();
-        pObj.addText ( '五、血透过程中和治疗期间存在下列医疗风险，可能造成严重后果，甚至危及生命：' );
-        var pObj = docx.createP ();
-        pObj.addText ( '1.低血压，心力衰竭，心肌梗塞，心律失常，脑血管意外；' );
-        var pObj = docx.createP ();
-        pObj.addText ( '2.空气球栓塞；' );
-        var pObj = docx.createP ();
-        pObj.addText ( '3.过敏反应；' );
-        var out = fs.createWriteStream ( 'out.docx' );// 文件写入
-        out.on ( 'error', function ( err ) {
-            console.log ( err );
-        });
-        var result = docx.generate (out);// 服务端生成word
-        res.writeHead ( 200, {
-    // 注意这里的type设置，导出不同文件type值不同application/vnd.openxmlformats-officedocument.presentationml.presentation
-            "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", 
-     'Content-disposition': 'attachment; filename=out.docx'
-        });
-        docx.generate (res);// 客户端导出word 
+var html = fs.readFileSync('./public/test.html', 'utf8'); // 引入html模板
+var pdf = require('html-pdf'); // html-pdf
+var createPDFProtocolFile = function (template, options, reg, filename) {
+  /**
+    template: html 模板
+    options: 配置
+    reg: 正则匹配规则
+    filename: 输出pdf文件路径及文件名
+  */
+    // 将所有匹配规则在html模板中匹配一遍
+    if (reg && Array.isArray(reg)) {
+      reg.forEach(item => {
+        template = template.replace(item.relus, item.match);
+      });
     }
+    pdf.create(template, options).toFile(filename, function(err) {
+      if (err) {
+          return err;
+      }
+      return filename;
+    })
+}
+var options = {
+    format: 'A4'
+}; 
 
-module.exports = { exportWord };
+var reg = [
+  {
+    relus: /__CERNO__/g,
+    match: "",
+    name: "cerNo"
+  },
+  {
+    relus: /__TESTPLACE__/g,
+    match: "",
+    name: "testPlace"
+  },
+  {
+    relus: /__CALTOOLS__/g,
+    match: "",
+    name: "calTools"
+  },
+  {
+    relus: /__MODEL__/g,
+    match: "",
+    name: "model"
+  },
+  {
+    relus: /__OUTNO__/g,
+    match: "",
+    name: "outNo"
+  },
+  {
+    relus: /__PROPLACE__/g,
+    match: "",
+    name: "proPlace"
+  },
+  {
+    relus: /__TESTACCO__/g,
+    match: "",
+    name: "testAcco"
+  },
+  {
+    relus: /__TESTRESULT__/g,
+    match: "",
+    name: "testRes"
+  },
+  {
+    relus: /__ALLOWPER__/g,
+    match: "",
+    name: "allowPer"
+  },
+  {
+    relus: /__TESTPER1__/g,
+    match: "",
+    name: "testPer1"
+  },
+  {
+    relus: /__TESTPER2__/g,
+    match: "",
+    name: "testPer2"
+  }
+];          			
+
+let exportWord = function (req) {
+    let datas = req.body;
+    for(let i in reg) {
+      reg[i].match = datas[reg[i].name];
+    }
+    let count = Math.floor(Math.random() * 10);
+    createPDFProtocolFile(html, options, reg, `./public/result/testCer${count}.pdf`);
+    return `./public/result/testCer${count}.pdf`;
+}
+
+module.exports = { exportWord }

@@ -4,6 +4,7 @@ import mainContent from './../pages/mainContent'
 import admianMian from './../pages/admin/main'
 import createNewChar from './../pages/admin/createNewChar'
 import inspectors from './../pages/admin/inspectors'
+import verificate from './../pages/Inspector/main'
 
 var ano = [
     {
@@ -13,13 +14,12 @@ var ano = [
     {
         path:'/login',
         component:login
-    }
-]
-var adminRouter = [
+    },
     {
         path: '/homePage',
         component: mainContent,
         redirect: '/homePage/',
+        permission: 0,
         name: '首页',
         children: [{
             path: '', 
@@ -30,6 +30,7 @@ var adminRouter = [
     {
         path: '/createNewChar',
         component: mainContent,
+        permission: 1,
         name: '新建页',
         children: [{
             path: '', 
@@ -40,6 +41,7 @@ var adminRouter = [
     {
         path: '/inspectors',
         component: mainContent,
+        permission: 1,
         name: '鉴定员列表页',
         children: [{
             path: '', 
@@ -47,16 +49,23 @@ var adminRouter = [
             meta: { title: '鉴定员列表', icon: 'el-icon-user' }
         }]
     },
-];
-
-var inspector = [
     {
-        path: ''
+        path: '/verificate',
+        component: mainContent,
+        permission: 0,
+        name: '评估鉴定页',
+        children: [{
+            path: '', 
+            component: verificate,
+            meta: { title: '评估鉴定', icon: 'el-icon-user' }
+        }]
     }
 ]
 
+
+
 var router = new vueRouter({
-    routes: ano.concat(adminRouter)
+    routes: ano
 })
 
 export default router;

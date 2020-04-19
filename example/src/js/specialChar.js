@@ -1,4 +1,36 @@
 /**
+ *  textArea原值与生成值辐射对象
+ */
+let textAreaPre2Pro = {};
+/**
+ * 弹出框按钮监听函数
+ */
+//basButSwiftInit 选择按钮和取消按钮
+const basButSelectBut = function(select,id,modalId) {
+    getDatas().then((datas) => {
+        $("#" + id).html(datas[select].renderHtml);
+        $("#" + modalId).fadeToggle();
+    })
+}
+const basButCancelBut = function(id) {
+    $("#" + id).fadeToggle();
+}
+//textAreaInit 添加符号按钮
+const textAreaOnAddBut = function(modalId,i) {
+    let pre = $("#" + modalId + "textArea").val();
+    pre += "...";
+    $("#" + modalId + "textArea").val(pre);
+    textAreaPre2Pro["#" + modalId + "textArea"]["pro"].push(i);
+}
+//textArea监听函数
+const textAreaListener = function(id) {
+    $(id).change(function() {
+        textAreaPre2Pro[id]["pre"] = $(this).val();
+    })
+}
+
+
+/**
  * 模态框div
  */
 let modal = (id,title,save) => {
@@ -14,10 +46,10 @@ let modal = (id,title,save) => {
                     <div class="modal-footer-content">  
                     ${
                         (save) ? `
-                            <button onclick="basButCancelBut('${id}')">取消</button>
+                            <button id="${id + "cancelBut"}">取消</button>
                             <button id="${id}TextAreaSaveBut">保存</button>
                         ` : `
-                            <button onclick="basButCancelBut('${id}')">取消</button>
+                            <button id="${id + "cancelBut"}">取消</button>
                         `
                     }
                     </div>
@@ -60,10 +92,6 @@ let popoverBoard = () => {
     `;
 }
 
-/**
- *  textArea原值与生成值辐射对象
- */
-let textAreaPre2Pro = {};
 /*
     表格数据请求发送函数
 */
@@ -99,40 +127,17 @@ var clipStr = function(str) {
  */
 var modalInit = function(title,save) {
     return (function() {
-        let count = "modal" + Math.floor(Math.random() * 10);
+        let count = "modal" + Math.floor(Math.random() * 100);
         if($("#" + count).length === 0) {
             $("body").append(modal(count,title,save));
+            $("#" + count + 'cancelBut').click(() => {
+                basButCancelBut(count);
+            })
             return count;
         }else {
             return modalInit(title,save);
         }
     })()
-}
-/**
- * 弹出框按钮监听函数
- */
-//basButSwiftInit 选择按钮和取消按钮
-let basButSelectBut = function(select,id,modalId) {
-    getDatas().then((datas) => {
-        $("#" + id).html(datas[select].renderHtml);
-        $("#" + modalId).fadeToggle();
-    })
-}
-let basButCancelBut = function(id) {
-    $("#" + id).fadeToggle();
-}
-//textAreaInit 添加符号按钮
-let textAreaOnAddBut = function(modalId,i) {
-    let pre = $("#" + modalId + "textArea").val();
-    pre += "...";
-    $("#" + modalId + "textArea").val(pre);
-    textAreaPre2Pro["#" + modalId + "textArea"]["pro"].push(i);
-}
-//textArea监听函数
-let textAreaListener = function(id) {
-    $(id).change(function() {
-        textAreaPre2Pro[id]["pre"] = $(this).val();
-    })
 }
 //textArea结果保存函数
 let textAreaSaveBut = function(id,modalId) {
@@ -145,6 +150,7 @@ let textAreaSaveBut = function(id,modalId) {
             i++;
         }
         $("#" + id).html(preStr);
+        basButCancelBut(modalId);
     })
 }
 /**
@@ -166,59 +172,78 @@ let addTData2Modal = function(modalId,butId,popover) {
                     <td>
                         ${
                             (popover) ? 
-                            `<button onclick="textAreaOnAddBut('${modalId}','${i}')">添加</button>` :
-                            `<button onclick="basButSelectBut('${i}','${butId}','${modalId}')">选择</button>`
+                            `<button class="${modalId + "button"}" key="${i}">添加</button>` :
+                            `<button class="${modalId + "button"}" key="${i}">选择</button>`
                         }
                     </td>
                 </tr>
             `;
             tbody.append(tr);
-        }
+        };
+        // $(`#${modalId} .modal-content .${modalId}button`).click((e) => {
+        $(`.${modalId}button`).click((e) => {
+            let index = e.toElement.getAttribute("key");
+            (popover) ? textAreaOnAddBut(modalId,index) : basButSelectBut(index,butId,modalId);
+        }) 
     })
 }
 /*
     总引用函数
 */
-const specCharUIMod = {
-    basButSwiftInit: function(id) {
+var specCharUIMod = {
+    basButModalFlag: {},
+    textAreaInitFlag: {},
+    basButSwiftInit: (id) => {
         $(`#${id}`).click(() => {
-            let modalId = modalInit("特殊符号列表");
-            $("#" + modalId +" .modal-content").append(dataTable);
-            $("#" + modalId).fadeToggle(500);
-            addTData2Modal(modalId,id);
+            if(!!specCharUIMod.basButModalFlag[id]) {
+                $("#" + specCharUIMod.basButModalFlag[id]).fadeToggle(500);
+            } else {
+                let modalId = modalInit("特殊符号列表");
+                $("#" + modalId +" .modal-content").append(dataTable);
+                $("#" + modalId).fadeToggle(500);
+                addTData2Modal(modalId,id);
+                specCharUIMod.basButModalFlag[id] = modalId;
+            }
         });
     },
     textAreaInit: function(id) {
         $(`#${id}`).click(() => {
-            let title = `
-                <div style="display:flex;">
-                    <div style="width:50%;text-align:right;margin-right:-5%;">编辑</div>
-                    <div style="width:50%;text-align:right;padding-right:5%;">
-                        <button id="${id + "textAreaOnAdd"}">添加符号</button>
+            let modalIdFromObj = specCharUIMod.textAreaInitFlag[id];
+            if(!!modalIdFromObj) {
+                $("#" + modalIdFromObj).fadeToggle(500);
+            } else {
+                let title = `
+                    <div style="display:flex;">
+                        <div style="width:50%;text-align:right;margin-right:-5%;">编辑</div>
+                        <div style="width:50%;text-align:right;padding-right:5%;">
+                            <button id="${id + "textAreaOnAdd"}">添加符号</button>
+                        </div>
                     </div>
-                </div>
-            `;
-            let modalId = modalInit(title,true);
-            $("#" + modalId + " .modal-content").append(textAreaHtml(modalId));
-            $("#" + modalId).fadeToggle(500);
-            textAreaPre2Pro["#" + modalId + "textArea"] = { pro: []};
-            textAreaListener("#" + modalId + "textArea");
-            $("#" + modalId + " .modal-header").append(popoverBoard);
-            let addButton = $(`#${id + "textAreaOnAdd"}`);
-            let popoverModal = $("#" + modalId + " .modal-header > .popover-board");
-            let x = addButton.position().left - (popoverModal.width() / 2) + (addButton.width() / 1.5);
-            let y = addButton.position().top + (addButton.height() * 2);
-            popoverModal.css({top: y,left: x});
-            popoverModal.append(dataTable);
-            addTData2Modal(modalId,'id',true);
-            $("#" + modalId + "TextAreaSaveBut").click(function() {
-                textAreaSaveBut(id,modalId);
+                `;
+                let modalId = modalInit(title,true);
+                $("#" + modalId + " .modal-content").append(textAreaHtml(modalId));
+                $("#" + modalId).fadeToggle(500);
+                textAreaPre2Pro["#" + modalId + "textArea"] = { pro: []};
+                textAreaListener("#" + modalId + "textArea");
+                $("#" + modalId + " .modal-header").append(popoverBoard);
+                let addButton = $(`#${id + "textAreaOnAdd"}`);
+                let popoverModal = $("#" + modalId + " .modal-header > .popover-board");
+                let x = addButton.position().left - (popoverModal.width() / 2) + (addButton.width() / 1.5);
+                let y = addButton.position().top + (addButton.height() * 2);
+                popoverModal.css({top: y,left: x});
+                popoverModal.append(dataTable);
+                addTData2Modal(modalId,'id',true);
+                specCharUIMod.textAreaInitFlag[id] = modalId;
+                modalIdFromObj = modalId;
+            }
+            $("#" + modalIdFromObj + "TextAreaSaveBut").click(function() {
+                textAreaSaveBut(id,modalIdFromObj);
             })
             $(`#${id + "textAreaOnAdd"}`).click(function() {
-                popoverModal.fadeIn();
+                $("#" + modalIdFromObj + " .modal-header > .popover-board").fadeIn();
             })
-            $("#" + modalId + " .modal-content").click(function() {
-                $("#" + modalId + " .modal-header > .popover-board").fadeOut();
+            $("#" + modalIdFromObj + " .modal-content").click(function() {
+                $("#" + modalIdFromObj + " .modal-header > .popover-board").fadeOut();
             })
         })
     },
@@ -254,3 +279,12 @@ const specCharUIMod = {
         return getDatas();
     }
 }
+
+var MD0 = specCharUIMod.basButSwiftInit;
+var MD1 = specCharUIMod.textAreaInit;
+var MD2 = specCharUIMod.printPage;
+var MD3 = specCharUIMod.printDatas;
+export {
+    MD0,MD1,MD2,MD3
+}
+

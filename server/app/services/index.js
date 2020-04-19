@@ -1,8 +1,9 @@
 var { addChar, deleteChar, getChars } = require('../dao/index');
 
 const add = (markdown, render) => {
-    let res = addChar(markdown, render);
-    return res;
+    return addChar(markdown, render).then(function(res) {
+        return res;
+    });
 }
 
 const deleteOne = (id) => {

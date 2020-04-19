@@ -8,6 +8,10 @@ body{
     border: none;
     outline: none;
     cursor: pointer;
+    display: inline-block;
+    margin-left: 5%;
+    border: 1px solid rgba(222,222,222,1);
+    border-radius: 3px;
 }
 .bas-alt-but:hover {
     background: rgba(233,233,233,0.5);
@@ -99,6 +103,7 @@ body{
     border: 2px solid #c2e1f5;
     border-radius: 5px;
     display: none;
+    overflow: auto;
 }
 .popover-board:after, .popover-board:before {
 	bottom: 100%;

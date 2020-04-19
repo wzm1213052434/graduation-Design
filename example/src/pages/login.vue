@@ -5,11 +5,11 @@
         <div class="login-inputs">
             <div class="login-inputs-item">
                 <span>用户名:</span>
-                <input type="text" class="login-input"/>
+                <input v-model="name" type="text" class="login-input"/>
             </div>
             <div class="login-inputs-item">
                 <span>密码:</span>
-                <input type="password" class="login-input"/>
+                <input v-model="password" type="password" class="login-input"/>
             </div>
         </div>
         <div class="login-submit">
@@ -22,9 +22,40 @@
 <script>
 export default {
     name: 'login',
+    data() {
+        return {
+            name: '',
+            password: ''
+        }
+    },
     methods:{
         handleLogin() {
-            this.$router.push({path: '/homePage'}).catch(() => {});
+            if(this.name === "" || this.password === "") {
+                this.$message.error("用户名或密码不能为空！")
+                return;
+            }
+            this.$http({
+                method: 'post',
+                url: '/example/login',
+                data: {
+                    id: this.name,
+                    password: this.password
+                }
+            }).then((data) => {
+                data = data.data;
+                if(data.mes == 'NOT EXIST') {
+                    this.$message.error("用户名不存在！")
+                }else if(data.mes == 'WRONG') {
+                    this.$message.error("用户名或密码错误，请重试！")
+                }else {
+                    this.$store.dispatch('initInfo',{
+                        id: data.mes.id,
+                        permission: data.mes.permission,
+                        name: data.mes.name
+                    })
+                    this.$router.push({path: '/homePage'}).catch(() => {});
+                }
+            })
         }
     }
 }
@@ -70,6 +101,7 @@ export default {
     background: rgba(0,0,0,.3);
     color: rgba(187,222,214,1);
     font-size: 90%;
+    text-indent: 3%;
 }
 .login-submit {
     height: 20%;

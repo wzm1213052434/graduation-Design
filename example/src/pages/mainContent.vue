@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import breadCrumbs from './../components/breadCrumbs'
 export default {
     name: 'mainContent',
@@ -45,12 +46,18 @@ export default {
             breadTitle: ""
         }
     },
+    computed: {
+    ...mapGetters([
+            'getInfo'
+        ])
+    },
     methods: {
         getRoutersArr() {
             let temp = this.$router.options.routes;
+            let vuexState = this.getInfo;
             let res = [];
             for(let i in temp) {
-                if(!!temp[i].children) {
+                if(!!temp[i].children && temp[i].permission <= vuexState.permission) {
                     res.push(temp[i]);
                 }
             }
@@ -85,7 +92,7 @@ export default {
     .right-pane-botPane {
         width: 100%;
         height: 93%;
-        margin-top: 1%;
+        padding-top: 1%;
     }
     .component-fade-enter-active, .component-fade-leave-active {
         transition: opacity .6s ease;
