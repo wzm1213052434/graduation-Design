@@ -13,7 +13,7 @@ Vue.config.productionTip = false
 Vue.use(ElementUI);
 
 const Axios = axios.create({
-  baseURL: "http://127.0.0.1:3000/",
+  baseURL: "http://118.24.46.203:3000/",
   timeout: 8000,
   headers: {
       "accept": "application/json",

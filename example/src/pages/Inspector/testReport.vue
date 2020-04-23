@@ -93,7 +93,7 @@ export default {
       req.send(JSON.stringify(datas));
       // $.ajax({
       //         type: "post",
-      //         url:"http://localhost:3000/getDocument",
+      //         url:"http://118.24.46.203:3000/getDocument",
       //         responseType:'blob',
       //         data: datas,
       //         success: function(res) {
@@ -113,25 +113,27 @@ export default {
       //             console.log(err);
       //         }
       //     })
-      // this.$http.post('/getDocument',datas).then(function(response) {
-      //   // if(res && res.state) {
-      //   //   var a = document.createElement('a');
-      //   //   a.href = res.data;
-      //   //   a.download = orderId;
-      //   //   document.body.appendChild(a);
-      //   //   a.click();
-      //   //   document.body.removeChild(a);
-      //   // }else {
-      //   //   _this.$message('下载失败');
-      //   // }
-      //   let path = response.data.fileName;
-      //   let a = document.createElement('a');
-      //   a.href = path;
-      //   a.download = response.data.fileName;
-      //   document.body.appendChild(a);
-      //   a.click();
-      //   document.body.removeChild(a);
-		  // })
+      /*this.$http.post('/getDocument',datas).then(function(response) {
+        if(res && res.state) {
+          var a = document.createElement('a');
+          a.href = res.data;
+          a.download = orderId;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }else {
+          _this.$message('下载失败');
+        }
+        // const data = response;
+        // const blob = new Blob([data]);
+        // const blobUrl = window.URL.createObjectURL(blob);
+        // let a = document.createElement('a');
+        // a.style.display = 'none';
+        // a.download = '检查报告.pdf';
+        // a.href = blobUrl;
+        // a.click();
+        // document.removeChild(a);
+		  })*/
     }
   }
 }

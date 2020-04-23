@@ -1,3 +1,4 @@
+const serverUrl = "";
 /**
  *  textArea原值与生成值辐射对象
  */
@@ -98,7 +99,7 @@ let popoverBoard = () => {
 var getDatas = function() {
     return new Promise((resolve,reject) => {
         $.ajax({
-            url: "http://localhost:3000/getInformation",
+            url: serverUrl,
             type: "get",
             data: {},
             success: function(data) {
@@ -247,32 +248,30 @@ var specCharUIMod = {
             })
         })
     },
-    printPage: function(id) {
-        $(`#${id}`).click(() => {
-                //打印的相关操作
-                var orderId = "test";
-                console.log(orderId);
-                $.ajax({
-                    type: "get",
-                    url:"http://localhost:3000/getDocument",
-                    responseType:'blob',
-                    data: {},
-                    success: function(res) {
-                        //这里res.data是返回的blob对象
-                        var blob = new Blob([res.data], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'}); //application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
-                        var downloadElement = document.createElement('a');
-                        var href = window.URL.createObjectURL(blob); //创建下载的链接
-                        downloadElement.href = href;
-                        downloadElement.download = orderId+'.docx'; //下载后文件名
-                        document.body.appendChild(downloadElement);
-                        downloadElement.click(); //点击下载
-                        document.body.removeChild(downloadElement); //下载完成移除元素
-                        window.URL.revokeObjectURL(href); //释放掉blob对象
-                    },
-                    error: function(err) {
-                        console.log(err);
-                    }
-                })
+    printPage: function(printPageUrl,datas) {
+        //打印的相关操作
+        var orderId = "test";
+        console.log(orderId);
+        $.ajax({
+            type: "post",
+            url: printPageUrl,
+            responseType:'blob',
+            data: datas,
+            success: function(res) {
+                //这里res.data是返回的blob对象
+                var blob = new Blob([res.data], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'}); //application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
+                var downloadElement = document.createElement('a');
+                var href = window.URL.createObjectURL(blob); //创建下载的链接
+                downloadElement.href = href;
+                downloadElement.download = orderId+'.docx'; //下载后文件名
+                document.body.appendChild(downloadElement);
+                downloadElement.click(); //点击下载
+                document.body.removeChild(downloadElement); //下载完成移除元素
+                window.URL.revokeObjectURL(href); //释放掉blob对象
+            },
+            error: function(err) {
+                console.log(err);
+            }
         })
     },
     printDatas: function() {

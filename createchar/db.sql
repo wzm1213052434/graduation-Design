@@ -56,5 +56,5 @@ CREATE TABLE `person` (
 -- ----------------------------
 INSERT INTO `person` VALUES ('2020021301', '0', '2020021301', '李', '1');
 INSERT INTO `person` VALUES ('2020021302', '1', '2020021302', '王', '1');
-INSERT INTO `person` VALUES ('2020021303', '2', '2020021303', '陈一', '1');
-INSERT INTO `person` VALUES ('2020021304', '2', '2020021304', '陈二', '1');
+INSERT INTO `person` VALUES ('2020021303', '0', '2020021303', '陈一', '1');
+INSERT INTO `person` VALUES ('2020021304', '0', '2020021304', '陈二', '1');

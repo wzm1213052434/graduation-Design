@@ -249,9 +249,7 @@ var specCharUIMod = {
         })
     },
     printPage: function(printPageUrl,datas) {
-        //打印的相关操作
         var orderId = "test";
-        console.log(orderId);
         $.ajax({
             type: "post",
             url: printPageUrl,
@@ -279,11 +277,4 @@ var specCharUIMod = {
     }
 }
 
-var MD0 = specCharUIMod.basButSwiftInit;
-var MD1 = specCharUIMod.textAreaInit;
-var MD2 = specCharUIMod.printPage;
-var MD3 = specCharUIMod.printDatas;
-export {
-    MD0,MD1,MD2,MD3
-}
 
