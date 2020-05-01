@@ -2,8 +2,28 @@ var { add, deleteOne, getAll } = require('../services/index');
 var { exportWord } = require('../services/getDoc');
 var { getAccount, deleteAccount, addAccount, changeOneAccount } = require('../services/admin');
 var { login } = require('../services/login');
+var fs = require('fs');
 var express = require('express');
 var router = express.Router();
+
+function readFile(filePath,resp) {
+	fs.exists(filePath, function(exist) {
+		if(exist) {
+			fReadStream = fs.createReadStream(filePath);
+			fReadStream.on('data', function(chunk) {
+				resp.write(chunk, 'binary');
+			});
+			fReadStream.on('end', function() {
+				resp.end();
+			});
+		} else {
+			console.log('文件不存在！');
+			setTimeout(() => {
+				readFile(filePath,resp);
+			}, 100);
+		}
+	});  
+}
 /**
  * createChar 各接口
  */
@@ -31,15 +51,24 @@ router.post('/deleteOneChar',function(req,res) {
 		res.json(a);
 	})
 })
-router.post('/getDocument',function(req,res) {
+router.post('/getDocument',function(req,resp) {
 	new Promise((reslove) => {
 		reslove(exportWord(req))
-	}).then((filename) => {
-		setTimeout(function(){
-			res.setHeader('Content-Type', 'application/pdf');
-			res.download(filename);
-		},500)   
-		//setTimeout(res.json(`./public/result/testCer${count}.pdf`),500)   
+	}).then((filePath) => {
+		// setTimeout(function(){
+		// 	res.setHeader('Content-Type', 'application/pdf');
+		// 	res.download(filename);
+		// },500)   
+		//setTimeout(res.json(`./public/result/testCer${count}.pdf`),500) 
+		console.log(filePath);
+		let temp = filePath.split('/');
+		let filename = temp[temp.length - 1];
+		console.log(filename)
+		resp.writeHead(200, { //设置响应头
+			'Content-Type': 'application/octet-stream',//告诉浏览器这是一个二进制文件
+			'Content-Disposition': 'attachment; filename=' + encodeURI(filename),//告诉浏览器这是一个需要下载的文件
+		});
+		readFile(filePath,resp);
 	})
 })
 /**

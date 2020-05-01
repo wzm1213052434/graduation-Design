@@ -69,71 +69,41 @@ export default {
       MD1("test");
     },
     printPage() {
+      for(let i in this.form) {
+        if(!this.form[i]) {
+          this.$message.error("请完善表单");
+          return;
+        }
+      }
       let _this = this;
       var orderId = "test";
       let datas = {};
       datas = this.form;
       let html = $("#test").html();
       datas.model += html;
-      const req = new XMLHttpRequest();
-      req.open('POST', 'http://localhost:3000/getDocument', true);
-      req.responseType = 'blob';
-      req.setRequestHeader('Content-Type', 'application/json');
-      req.onload = function() {
-        const data = req.response;
-        const blob = new Blob([data]);
-        const blobUrl = window.URL.createObjectURL(blob);
-        let a = document.createElement('a');
-        a.style.display = 'none';
-        a.download = '检查报告.pdf';
-        a.href = blobUrl;
-        a.click();
-        document.body.removeChild(a);
-      };
-      req.send(JSON.stringify(datas));
-      // $.ajax({
-      //         type: "post",
-      //         url:"http://118.24.46.203:3000/getDocument",
-      //         responseType:'blob',
-      //         data: datas,
-      //         success: function(res) {
-      //             //这里res.data是返回的blob对象
-      //             var blob = new Blob([res.data], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'}); //application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
-      //             var downloadElement = document.createElement('a');
-      //             var href = window.URL.createObjectURL(blob); //创建下载的链接
-      //             downloadElement.href = href;
-      //             downloadElement.download = orderId+'.docx'; //下载后文件名
-      //             document.body.appendChild(downloadElement);
-      //             downloadElement.click(); //点击下载
-      //             document.body.removeChild(downloadElement); //下载完成移除元素
-      //             window.URL.revokeObjectURL(href); //释放掉blob对象
-      //         },
-      //         error: function(err) {
-
-      //             console.log(err);
-      //         }
-      //     })
-      /*this.$http.post('/getDocument',datas).then(function(response) {
-        if(res && res.state) {
-          var a = document.createElement('a');
-          a.href = res.data;
-          a.download = orderId;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        }else {
-          _this.$message('下载失败');
-        }
-        // const data = response;
-        // const blob = new Blob([data]);
-        // const blobUrl = window.URL.createObjectURL(blob);
-        // let a = document.createElement('a');
-        // a.style.display = 'none';
-        // a.download = '检查报告.pdf';
-        // a.href = blobUrl;
-        // a.click();
-        // document.removeChild(a);
-		  })*/
+      this.$http({
+        method: "post",
+        url: '/getDocument',
+        data: datas,
+        responseType: "blob" // 二进制数据
+      }).then(function(response) {
+        _this.downloadFile(response);
+		  })
+    },
+    downloadFile(data) {
+      console.log(data);
+      var _that = this;
+      if (!data) {
+        console.log('没数据');
+        return;
+      }
+      let url = window.URL.createObjectURL(new Blob([data.data]));
+      let link = document.createElement("a");
+      link.style.display = "none";
+      link.href = url;
+      link.setAttribute("download", "检查报告.pdf");
+      document.body.appendChild(link);
+      link.click();
     }
   }
 }
